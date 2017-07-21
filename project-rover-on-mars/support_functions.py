@@ -6,6 +6,7 @@ Created on Wed Jul 19 16:01:05 2017
 """
 
 import numpy as np
+import cv2
 # Define a function to perform a color threshold
 # Default thresholds of 0 should return a binary image with all pixels set to 1
 def color_thresh(img, rgb_thresh=(0, 0, 0)):
@@ -21,3 +22,14 @@ def color_thresh(img, rgb_thresh=(0, 0, 0)):
     color_select[above_thresh] = 1
     # Return the binary image
     return color_select
+
+#transform rover's perspective into bird's eyes view.
+def perspect_transform(img, src, dst):
+
+    # Get transform matrix using cv2.getPerspectivTransform()
+    M = cv2.getPerspectiveTransform(src, dst)
+    # Warp image using cv2.warpPerspective()
+    # keep same size as input image
+    warped = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
+    # Return the result
+    return warped
