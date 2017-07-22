@@ -10,7 +10,8 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 #import numpy as np
 import numpy as np
-from support_functions import color_thresh, perspect_transform
+import cv2
+from support_functions import color_thresh, perspect_transform, rover_coords
 
 # Uncomment the next line for use in a Jupyter notebook
 #%matplotlib inline
@@ -66,7 +67,7 @@ warped = perspect_transform(image, source, destination)
 # Draw Source and destination points on images (in blue) before plotting
 cv2.polylines(image, np.int32([source]), True, (0, 0, 255), 1)
 cv2.polylines(warped, np.int32([destination]), True, (0, 0, 255), 1)
-
+"""
 # Display the original image and binary               
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(21, 7), sharey=True)
 f.tight_layout()
@@ -76,4 +77,20 @@ ax1.set_title('Original Image', fontsize=40)
 ax2.imshow(warped, cmap='gray')
 ax2.set_title('Result', fontsize=40)
 plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
+"""
 
+#Converting to Rover-Centric Coordinates
+
+# Warp, Threshold, and Map to Rover-Centric Coordinates
+colorsel = color_thresh(warped, rgb_thresh=(160, 160, 160))
+
+# Extract x and y positions of navigable terrain pixels
+# and convert to rover coordinates
+xpix, ypix = rover_coords(colorsel)
+
+# Plot the map in rover-centric coords
+fig = plt.figure(figsize=(5, 7.5))
+plt.plot(xpix, ypix, '.')
+plt.ylim(-160, 160)
+plt.xlim(0, 160)
+plt.title('Rover-Centric Map', fontsize=20)
