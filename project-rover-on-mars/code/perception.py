@@ -144,7 +144,10 @@ def perception_step(Rover):
     # Update Rover pixel distances and angles
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
-    Rover.nav_angles = angles
+    if Rover.in_new_terrain:
+        Rover.nav_angles = angles
+    else:
+        Rover.nav_angles = angles[:len(angles)/2]
     
     #See if we can find some rocks
     rock_map = find_rocks(warped, levels=(110, 100, 50))
